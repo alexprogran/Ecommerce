@@ -1,0 +1,61 @@
+# ==== BACKEND: DJANGO ====
+# Ambientes virtuais
+venv/
+.env
+*.env
+*.env.*
+
+# Arquivos de banco de dados local
+*.sqlite3
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Arquivos de log do Django
+*.log
+
+# Arquivos de migração (opcional ignorar, mas geralmente se versiona)
+# */migrations/
+
+# ==== FRONTEND: VUE ====
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env.local
+.env.*.local
+
+# Logs do npm/yarn/pnpm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==== EDITORES ====
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+
+# JetBrains (WebStorm/PyCharm)
+.idea/
+
+# Outros arquivos de sistema/editor
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ==== TESTES ====
+coverage/
+htmlcov/
+*.cover
+*.coverage
+*.egg-info/
+.cache/
+pytest_cache/
+
