@@ -1,9 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import axios from 'axios';
 
-// Define types
 type User = {
-  id: string;
-  name: string;
+  id: number;
+  username: string;
   email: string;
   isAdmin: boolean;
 };
@@ -17,70 +17,67 @@ type AuthContextType = {
   logout: () => void;
 };
 
-// Create Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Mock users for demo
-const MOCK_USERS = [
-  { id: '1', name: 'Admin User', email: 'admin@pizza.com', password: 'admin123', isAdmin: true },
-  { id: '2', name: 'Test User', email: 'user@pizza.com', password: 'user123', isAdmin: false }
-];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  
-  // Check local storage on initial load
+
   useEffect(() => {
     const storedUser = localStorage.getItem('pizza-user');
-    if (storedUser) {
+    const token = localStorage.getItem('pizza-token');
+    if (storedUser && token) {
+      axios.defaults.headers.common['Authorization'] = `Token ${token}`;
       setUser(JSON.parse(storedUser));
     }
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Simulate API call
-    const foundUser = MOCK_USERS.find(
-      u => u.email === email && u.password === password
-    );
+    try {
+      const response = await axios.post('/api/auth/login/', { username: email, password });
+      const token = response.data.token;
 
-    if (foundUser) {
-      const { password, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem('pizza-user', JSON.stringify(userWithoutPassword));
+      const userProfile = await axios.get('/api/profile/');
+      const userData = userProfile.data[0]; // considerando que retorna uma lista
+
+      const fullUser: User = {
+        id: userData.user.id,
+        username: userData.user.username,
+        email: userData.user.email,
+        isAdmin: userData.is_admin,
+      };
+
+      localStorage.setItem('pizza-token', token);
+      localStorage.setItem('pizza-user', JSON.stringify(fullUser));
+      axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+
+      setUser(fullUser);
       return true;
+    } catch (error) {
+      console.error('Login failed:', error);
+      return false;
     }
-    return false;
   };
 
   const register = async (name: string, email: string, password: string) => {
-    // Check if user already exists
-    if (MOCK_USERS.some(u => u.email === email)) {
+    try {
+      await axios.post('/api/auth/register/', {
+        username: name,
+        email,
+        password
+      });
+
+      return await login(email, password);
+    } catch (error) {
+      console.error('Register failed:', error);
       return false;
     }
-
-    // In a real app, this would be an API call
-    const newUser = {
-      id: String(MOCK_USERS.length + 1),
-      name,
-      email,
-      password,
-      isAdmin: false
-    };
-
-    // Add user to mock data
-    MOCK_USERS.push(newUser);
-
-    // Log user in
-    const { password: _, ...userWithoutPassword } = newUser;
-    setUser(userWithoutPassword);
-    localStorage.setItem('pizza-user', JSON.stringify(userWithoutPassword));
-    
-    return true;
   };
 
   const logout = () => {
-    setUser(null);
     localStorage.removeItem('pizza-user');
+    localStorage.removeItem('pizza-token');
+    delete axios.defaults.headers.common['Authorization'];
+    setUser(null);
   };
 
   const value = {
@@ -89,13 +86,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAdmin: user?.isAdmin || false,
     login,
     register,
-    logout
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Custom hook for using auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

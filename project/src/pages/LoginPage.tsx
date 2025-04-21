@@ -51,7 +51,7 @@ const LoginPage = () => {
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
           <Link to="/register" className="font-medium text-red-600 hover:text-red-500">
-            register for a new account
+          registre-se para uma nova conta
           </Link>
         </p>
       </div>
