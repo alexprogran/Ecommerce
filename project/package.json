@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "backend": "python manage.py runserver"
+    "backend": "call .\\venv\\Scripts\\activate.bat && python manage.py runserver"
   },
   "dependencies": {
     "axios": "^1.8.4",
