@@ -32,12 +32,13 @@ const RegisterPage = () => {
       return;
     }
 
-    try {
+    try { 
       setError('');
       setLoading(true);
       
       const success = await register(name, email, password);
-      
+        console.log('Dados da págana de criação do usuário: ', name, email, password)
+
       if (success) {
         navigate('/');
       } else {

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import api from '../Api';
 
 type User = {
   id: number;
@@ -12,7 +12,7 @@ type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
 };
@@ -26,17 +26,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedUser = localStorage.getItem('pizza-user');
     const token = localStorage.getItem('pizza-token');
     if (storedUser && token) {
-      axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+      api.defaults.headers.common['Authorization'] = `Token ${token}`;
       setUser(JSON.parse(storedUser));
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (username: string, password: string) => {
     try {
-      const response = await axios.post('/api/auth/login/', { username: email, password });
+      const response = await api.post('/api/auth/login/', { username, password });
       const token = response.data.token;
+      localStorage.setItem('pizza-token', token);
+      api.defaults.headers.common['Authorization'] = `Token ${token}`;
 
-      const userProfile = await axios.get('/api/profile/');
+
+     
+      const userProfile = await api.get('/endpoint/profile/');
       const userData = userProfile.data[0]; // considerando que retorna uma lista
 
       const fullUser: User = {
@@ -45,10 +49,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: userData.user.email,
         isAdmin: userData.is_admin,
       };
+      console.log('Informações do usuário: ', fullUser)
 
-      localStorage.setItem('pizza-token', token);
       localStorage.setItem('pizza-user', JSON.stringify(fullUser));
-      axios.defaults.headers.common['Authorization'] = `Token ${token}`;
 
       setUser(fullUser);
       return true;
@@ -59,14 +62,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (name: string, email: string, password: string) => {
+   
     try {
-      await axios.post('/api/auth/register/', {
+      await api.post('/endpoint/register/', {
         username: name,
         email,
         password
       });
 
-      return await login(email, password);
+      return await login(name, password);
     } catch (error) {
       console.error('Register failed:', error);
       return false;
@@ -76,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     localStorage.removeItem('pizza-user');
     localStorage.removeItem('pizza-token');
-    delete axios.defaults.headers.common['Authorization'];
+    delete api.defaults.headers.common['Authorization'];
     setUser(null);
   };
 

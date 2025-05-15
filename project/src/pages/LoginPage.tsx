@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -12,14 +12,13 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if there's a redirect path in the state
   const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      setError('Please enter both email and password');
+    if (!username || !password) {
+      setError('Por favor, preencha usuário e senha');
       return;
     }
 
@@ -27,15 +26,15 @@ const LoginPage = () => {
       setError('');
       setLoading(true);
       
-      const success = await login(email, password);
+      const success = await login(username, password);
       
       if (success) {
         navigate(from, { replace: true });
       } else {
-        setError('Invalid email or password');
+        setError('Usuário ou senha inválidos');
       }
     } catch (err) {
-      setError('Failed to log in');
+      setError('Erro ao tentar fazer login');
       console.error(err);
     } finally {
       setLoading(false);
@@ -51,7 +50,7 @@ const LoginPage = () => {
         <p className="mt-2 text-center text-sm text-gray-600">
           Ou{' '}
           <Link to="/register" className="font-medium text-red-600 hover:text-red-500">
-          registre-se para uma nova conta
+            registre-se para uma nova conta
           </Link>
         </p>
       </div>
@@ -66,18 +65,18 @@ const LoginPage = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Endereço de e-mail
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Nome de usuário
               </label>
               <div className="mt-1">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500"
                 />
               </div>
@@ -109,7 +108,7 @@ const LoginPage = () => {
                   loading ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? 'Entrando...' : 'Entrar'}
               </button>
             </div>
           </form>
@@ -120,15 +119,15 @@ const LoginPage = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Demo accounts</span>
+                <span className="px-2 bg-white text-gray-500">Contas de demonstração</span>
               </div>
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-3">
               <div>
-                <p className="text-sm text-gray-500 mb-2">For testing purposes, you can use:</p>
-                <p className="text-sm text-gray-600">Admin: admin@pizza.com / admin123</p>
-                <p className="text-sm text-gray-600">User: user@pizza.com / user123</p>
+                <p className="text-sm text-gray-500 mb-2">Para testar, utilize:</p>
+                <p className="text-sm text-gray-600">Admin: <strong>admin</strong> / admin123</p>
+                <p className="text-sm text-gray-600">Usuário: <strong>user</strong> / user123</p>
               </div>
             </div>
           </div>

@@ -34,11 +34,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedCart) {
       setItems(JSON.parse(savedCart));
     }
+    console.log('Lista de itens no localStorage:', savedCart)
   }, []);
 
   // Save cart to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('pizza-cart', JSON.stringify(items));
+    console.log('Houve alterações na lista de itens: ', items);
+    const savedCart = localStorage.getItem('pizza-cart');
+    console.log('Lista no localStorage: ',savedCart )
   }, [items]);
 
   const addToCart = (newItem: Omit<CartItem, 'quantity'>) => {
@@ -46,12 +50,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check if item already exists with same id and size
       const existingItemIndex = currentItems.findIndex(
         item => item.id === newItem.id && item.size === newItem.size
+        
       );
-
+      console.log('esistingItemIndex: ', existingItemIndex);
       if (existingItemIndex >= 0) {
         // Update quantity of existing item
         const updatedItems = [...currentItems];
         updatedItems[existingItemIndex].quantity += 1;
+
         return updatedItems;
       } else {
         // Add new item with quantity 1

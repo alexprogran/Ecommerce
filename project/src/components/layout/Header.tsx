@@ -14,7 +14,7 @@ const Header = () => {
     logout();
     navigate('/');
     setIsMenuOpen(false);
-  };
+  }; 
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -64,7 +64,7 @@ const Header = () => {
                 <div className="group relative">
                   <button className="flex items-center text-gray-700 hover:text-red-600">
                     <User size={20} className="mr-1" />
-                    <span className="font-medium">{user?.name.split(' ')[0]}</span>
+                    <span className="font-medium">{user?.username.split(' ')[0]}</span>
                   </button>
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     <Link 

@@ -1,3 +1,7 @@
+from django.contrib.auth.models import User
+from rest_framework.views import APIView
+from rest_framework.serializers import Serializer, CharField, EmailField
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -7,6 +11,33 @@ from .serializers import (
     PizzaSerializer, OrderSerializer, OrderUpdateSerializer,
     UserProfileSerializer
 )
+
+
+
+# Serializer para validar os dados de cadastro
+class RegisterSerializer(Serializer):
+    username = CharField(max_length=100)
+    email = EmailField()
+    password = CharField(write_only=True, max_length=128)
+
+    def validate(self, data):
+        # Você pode adicionar validações customizadas aqui (ex: checar se o email já existe)
+        return data
+
+class RegisterView(APIView):
+    def post(self, request):
+        # Validação com o serializer
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            # Criando o usuário
+            username = serializer.validated_data['username']
+            email = serializer.validated_data['email']
+            password = serializer.validated_data['password']
+            user = User.objects.create_user(username=username, email=email, password=password)
+
+            return Response({'message': 'Usuário registrado com sucesso!'}, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class IsAdminUser(permissions.BasePermission):
     def has_permission(self, request, view):
