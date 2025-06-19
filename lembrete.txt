@@ -1,5 +1,0 @@
-- criado a view RegisterView(APIView) com modelo User do django
-- Utilizar API já pronta do django para token 
-    -from rest_framework.authtoken.views import obtain_auth_token
-    -path('api/auth/login/', obtain_auth_token),
-    -realizar a migração - com o migrate
