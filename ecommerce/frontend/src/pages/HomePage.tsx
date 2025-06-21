@@ -12,7 +12,7 @@ const HomePage = () => {
         }}>
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            Delicious Pizza, <br />Delivered Fast
+            Pizza deliciosas, <br />Delivered Fast
           </h1>
           <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
             Handcrafted with fresh ingredients and baked to perfection.

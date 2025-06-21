@@ -4,7 +4,7 @@ venv/
 ecom_venv/
 .env
 *.env
-*.env.*
+# *.env.*
 lembretes.txt
 
 # Arquivos de banco de dados local
